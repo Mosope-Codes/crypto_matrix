@@ -26,6 +26,7 @@ public class CreateDecryptionService {
     public Map<String, Object> createDecryption(CreateDecryptionDto createDecryptionDto){
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         User user = userRepository.findByEmail(userEmail);
+        // User user = userRepository.findByEmail("b.enjaminowolab@gmail.com"); // Temporary hardcoded email for testing
         try {
             SimpleMatrix publicKeyMatrix = MatrixSerializerUtil.deserialize(user.getKeyMatrix().getPublicKeyMatrix());
             String plainText = decrypt(createDecryptionDto.getCiphertext(), publicKeyMatrix);
@@ -41,21 +42,24 @@ public class CreateDecryptionService {
         int mod = AlphabethUtil.size();
         int keyRowSize = key.getNumRows();
         StringBuilder plaintext = new StringBuilder();
-        SimpleMatrix inverseKey = MatrixModUtil.modularInverse3x3(key);
+        SimpleMatrix inverseKey = MatrixModUtil.invertMod(key).transpose();
 
         for (int i = 0; i < ciphertext.length(); i += keyRowSize) {
             double[][] vector = new double[keyRowSize][1];
             for (int j = 0; j < keyRowSize; j++) {
                 vector[j][0] = AlphabethUtil.charToIndex(ciphertext.charAt(i + j));
             }
+            SimpleMatrix encryptedMatrix = new SimpleMatrix(vector);
 
-            SimpleMatrix multiplied = inverseKey.mult(new SimpleMatrix(vector));
+            SimpleMatrix multiplied = inverseKey.mult(encryptedMatrix);
 
             for (int r = 0; r < multiplied.getNumRows(); r++) {
-                int index = (int) Math.round(multiplied.get(r, 0));
+                int index = (int) ((multiplied.get(r, 0) % mod + mod) % mod);
                 plaintext.append(AlphabethUtil.indexToChar(((index % mod) + mod) % mod));
             }
         }
+
+        
 
         return plaintext.toString().replace("_", " ");
     }

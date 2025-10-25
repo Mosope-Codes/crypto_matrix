@@ -20,8 +20,8 @@ public class MatrixSerializerUtil {
     }
 
     private static double[][] to2D(SimpleMatrix matrix) {
-        int rows = matrix.numRows();
-        int cols = matrix.numCols();
+        int rows = matrix.getNumRows();
+        int cols = matrix.getNumCols();
         double[][] array = new double[rows][cols];
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {

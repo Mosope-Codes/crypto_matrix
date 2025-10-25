@@ -35,33 +35,33 @@ public class GenerateKeyMatrixService {
     // public SimpleMatrix generateRandomIntegerMatrix(int rows, int cols, int min,
     // int max) {
     // Random random = new Random();
+    // int MOD = AlphabethUtil.size();
 
-    // double[][] data = new double[3][3];
-    // for (int i = 0; i < 3; i++) {
-    // for (int j = 0; j < 3; j++) {
-    // data[i][j] = random.nextInt(10);
+    // double[][] data = new double[rows][cols];
+    // for (int i = 0; i < cols; i++) {
+    // for (int j = 0; j < rows; j++) {
+    // data[i][j] = random.nextInt(MOD);
     // }
     // }
 
     // SimpleMatrix matrixData = new SimpleMatrix(data);
-    // int mod = AlphabethUtil.size();
 
-    // int detMod = (int)((matrixData.determinant() % mod) + mod) % mod;
+    // int determinant = (int) Math.round(matrixData.determinant());
     // do {
     // return matrixData;
     // } while (Math.abs(matrixData.determinant()) < 1e-9 &&
-    // java.math.BigInteger.valueOf(detMod)
-    // .gcd(java.math.BigInteger.valueOf(mod))
+    // java.math.BigInteger.valueOf(determinant)
+    // .gcd(java.math.BigInteger.valueOf(MOD))
     // .intValue() == 1);
 
     // }
 
-    public SimpleMatrix generateRandomIntegerMatrix(int rows, int cols, int min, int max) {
+    public SimpleMatrix generateRandomIntegerMatrix(int rows, int cols, int min,
+            int max) {
         Random random = new Random();
-        int mod = AlphabethUtil.size(); // should be 27
+        int MOD = AlphabethUtil.size();
 
         while (true) {
-            // Generate random integer matrix in range [min, max]
             double[][] data = new double[rows][cols];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
@@ -71,12 +71,12 @@ public class GenerateKeyMatrixService {
 
             SimpleMatrix matrixData = new SimpleMatrix(data);
 
-            int detMod = (int) Math.round(matrixData.determinant()) % mod;
-            detMod = (detMod + mod) % mod;
+            int det = (int) Math.round(matrixData.determinant());
+            int detMod = ((det % MOD) + MOD) % MOD;
 
             if (detMod != 0 &&
                     java.math.BigInteger.valueOf(detMod)
-                            .gcd(java.math.BigInteger.valueOf(mod))
+                            .gcd(java.math.BigInteger.valueOf(MOD))
                             .intValue() == 1) {
                 return matrixData;
             }
